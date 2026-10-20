@@ -36,10 +36,19 @@ export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Customer Authentication State
+  const [customer, setCustomer] = useState<{ name: string; phone: string } | null>(null);
+
   useEffect(() => {
     fetchItems();
+    
+    // Load Saved Cart
     const savedCart = localStorage.getItem('brew_cart');
     if (savedCart) setCart(JSON.parse(savedCart));
+
+    // Load Logged-in Customer Session
+    const savedCustomer = localStorage.getItem('brew_customer');
+    if (savedCustomer) setCustomer(JSON.parse(savedCustomer));
   }, []);
 
   const saveCart = (newCart: CartItemType[]) => {
@@ -57,6 +66,12 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('brew_customer');
+    setCustomer(null);
+    window.location.reload();
   };
 
   const filteredItems = activeCategory === "All"
@@ -108,17 +123,48 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Header */}
+      {/* Header Bar */}
       <div>
-        <header className="border-b border-[#2E221B] px-6 py-6 md:px-12 flex justify-between items-center bg-[#120B08]/60 backdrop-blur-md sticky top-0 z-40">
-          <h1 className="text-xl md:text-2xl font-black tracking-wider text-white">☕ BREW & BEAN</h1>
+        <header className="border-b border-[#2E221B] px-6 py-4 md:px-12 flex justify-between items-center bg-[#120B08]/80 backdrop-blur-md sticky top-0 z-40">
+          <Link href="/" className="text-xl md:text-2xl font-black tracking-wider text-white flex items-center gap-2">
+            ☕ BREW & BEAN
+          </Link>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
+            {/* Customer Auth State & Quick Links */}
+            {customer ? (
+              <div className="flex items-center gap-2 md:gap-3">
+                <span className="text-xs text-[#A39284] hidden md:inline">
+                  Welcome, <span className="text-[#D2A072] font-bold">{customer.name}</span>
+                </span>
+                <Link
+                  href="/my-orders"
+                  className="bg-[#D2A072]/10 border border-[#D2A072]/40 text-[#D2A072] hover:bg-[#D2A072]/20 px-3 py-1.5 md:py-2 rounded-xl text-xs font-bold transition flex items-center gap-1"
+                >
+                  📋 <span className="hidden sm:inline">My</span> Orders
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-xs text-red-400 hover:text-red-300 border border-red-900/40 bg-red-950/20 px-2.5 py-1.5 md:py-2 rounded-xl transition"
+                >
+                  Log Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/customer-login"
+                className="bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-lg"
+              >
+                Sign In
+              </Link>
+            )}
+
+            {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative bg-[#1C1410] border border-[#2E221B] hover:border-[#D2A072]/50 px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-2 transition"
+              className="relative bg-[#1C1410] border border-[#2E221B] hover:border-[#D2A072]/50 px-3.5 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-2 transition"
             >
-              🛒 Cart
+              🛒 <span className="hidden sm:inline">Cart</span>
               {totalCartCount > 0 && (
                 <span className="bg-[#D2A072] text-[#120B08] px-2 py-0.5 rounded-full text-[10px] font-extrabold">
                   {totalCartCount}
@@ -126,20 +172,22 @@ export default function HomePage() {
               )}
             </button>
 
+            {/* Admin Portal Link */}
             <Link
               href="/admin"
-              className="text-xs text-[#A39284] hover:text-[#D2A072] border border-[#2E221B] hover:border-[#D2A072]/50 px-3 py-2 rounded-xl transition"
+              className="text-xs text-[#A39284] hover:text-[#D2A072] border border-[#2E221B] hover:border-[#D2A072]/50 px-3 py-2 rounded-xl transition hidden sm:block"
             >
               Admin Portal
             </Link>
           </div>
         </header>
 
-        <section className="text-center py-16 px-6 max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
+        {/* Hero Section */}
+        <section className="text-center py-12 md:py-16 px-6 max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
             Crafted Coffee & Cozy Moments
           </h2>
-          <p className="text-[#A39284] text-sm md:text-base leading-relaxed">
+          <p className="text-[#A39284] text-xs md:text-base leading-relaxed">
             Order online via Drive-Thru, In-Shop QR Scan, or Home Delivery!
           </p>
         </section>
@@ -166,10 +214,10 @@ export default function HomePage() {
         {/* Menu Grid Section */}
         <main className="max-w-6xl mx-auto px-6 mb-20">
           {loading ? (
-            <div className="text-center py-20 text-[#A39284]">Loading menu items...</div>
+            <div className="text-center py-20 text-[#A39284] text-xs">Loading menu items...</div>
           ) : filteredItems.length === 0 ? (
             <div className="text-center py-20 bg-[#1C1410] border border-[#2E221B] rounded-2xl max-w-md mx-auto">
-              <p className="text-[#A39284] text-sm">No items found in this category.</p>
+              <p className="text-[#A39284] text-xs">No items found in this category.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -264,6 +312,7 @@ export default function HomePage() {
         </div>
       )}
 
+      {/* Footer */}
       <footer className="border-t border-[#2E221B] py-8 text-center text-xs text-[#A39284]">
         <p>© 2026 Brew & Bean Coffee Shop. All rights reserved.</p>
       </footer>

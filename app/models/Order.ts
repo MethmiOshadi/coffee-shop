@@ -6,6 +6,8 @@ export interface IOrder extends Document {
   orderType: 'Drive-Thru' | 'In-Shop QR' | 'Delivery';
   pickupTime?: string;
   deliveryAddress?: string;
+  paymentMethod: 'Cash' | 'Card';
+  paymentStatus: 'Pending' | 'Paid';
   items: Array<{
     name: string;
     price: string;
@@ -27,6 +29,16 @@ const OrderSchema: Schema = new Schema(
     },
     pickupTime: { type: String },
     deliveryAddress: { type: String },
+    paymentMethod: { 
+      type: String, 
+      enum: ['Cash', 'Card'], 
+      required: true 
+    },
+    paymentStatus: { 
+      type: String, 
+      enum: ['Pending', 'Paid'], 
+      default: 'Pending' 
+    },
     items: [
       {
         name: { type: String, required: true },

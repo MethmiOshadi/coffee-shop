@@ -16,9 +16,17 @@ export default function CheckoutPage() {
   const [customer, setCustomer] = useState<{ name: string; phone: string } | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
+  // Order Details State
   const [orderType, setOrderType] = useState<'Drive-Thru' | 'In-Shop QR' | 'Delivery'>('Drive-Thru');
   const [pickupTime, setPickupTime] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
+
+  // Payment State
+  const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Card'>('Cash');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvc, setCardCvc] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
 
@@ -58,7 +66,20 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Basic Card Validation for Dummy Card Flow
+    if (paymentMethod === 'Card') {
+      if (!cardNumber || !cardExpiry || !cardCvc) {
+        alert('Please fill out all dummy card details.');
+        return;
+      }
+    }
+
     setLoading(true);
+
+    // Simulate payment processing delay for Card
+    if (paymentMethod === 'Card') {
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+    }
 
     const orderData = {
       customerName: customer.name,
@@ -66,6 +87,8 @@ export default function CheckoutPage() {
       orderType,
       pickupTime: orderType === 'Drive-Thru' ? pickupTime : undefined,
       deliveryAddress: orderType === 'Delivery' ? deliveryAddress : undefined,
+      paymentMethod,
+      paymentStatus: paymentMethod === 'Card' ? 'Paid' : 'Pending',
       items: cart.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity })),
       totalAmount,
     };
@@ -86,7 +109,7 @@ export default function CheckoutPage() {
       }
     } catch (err) {
       console.error(err);
-      alert('An error occurred while sending the order.');
+      alert('An error occurred while processing your order.');
     } finally {
       setLoading(false);
     }
@@ -111,18 +134,29 @@ export default function CheckoutPage() {
           </p>
 
           <div className="bg-[#0F0A07] border border-[#2E221B] rounded-xl p-4 text-left text-xs mb-6 space-y-2">
-            <p className="text-white font-bold">Method: <span className="text-[#D2A072]">{orderType}</span></p>
+            <p className="text-white font-bold">Fulfillment: <span className="text-[#D2A072]">{orderType}</span></p>
             {pickupTime && <p className="text-[#A39284]">Pickup Time: <span className="text-white">{pickupTime}</span></p>}
             {deliveryAddress && <p className="text-[#A39284]">Address: <span className="text-white">{deliveryAddress}</span></p>}
-            <p className="text-[#A39284]">Total: <span className="text-[#D2A072] font-bold">LKR {totalAmount.toFixed(2)}</span></p>
+            <p className="text-[#A39284]">Payment Method: <span className="text-white font-bold">{paymentMethod}</span></p>
+            <p className="text-[#A39284]">Payment Status: <span className="text-emerald-400 font-bold">{paymentMethod === 'Card' ? 'Paid (Online)' : 'Pending (Pay on Delivery/Pickup)'}</span></p>
+            <p className="text-[#A39284]">Total Amount: <span className="text-[#D2A072] font-bold">LKR {totalAmount.toFixed(2)}</span></p>
           </div>
 
-          <Link
-            href="/"
-            className="block w-full py-3 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-extrabold rounded-xl text-xs transition text-center shadow-lg"
-          >
-            Back to Home
-          </Link>
+          <div className="space-y-3">
+            <Link
+              href="/my-orders"
+              className="block w-full py-3.5 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-black rounded-xl text-xs transition text-center shadow-lg"
+            >
+              📋 Track Live Order Status
+            </Link>
+
+            <Link
+              href="/"
+              className="block w-full py-3 bg-[#1C1410] border border-[#2E221B] hover:border-[#D2A072]/50 text-[#A39284] hover:text-white font-bold rounded-xl text-xs transition text-center"
+            >
+              Back to Home
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -151,10 +185,10 @@ export default function CheckoutPage() {
           </button>
         </div>
 
-        {/* 1. Order Method */}
+        {/* 1. Select Order Method */}
         <div>
           <label className="block text-xs font-bold text-[#D2A072] uppercase tracking-wider mb-3">
-            1. Select Order Method
+            1. Select Fulfillment Method
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
@@ -177,7 +211,6 @@ export default function CheckoutPage() {
             ))}
           </div>
 
-          {/* Conditional Input */}
           {orderType === 'Drive-Thru' && (
             <div className="mt-3">
               <label className="block text-xs text-[#A39284] mb-1">Estimated Pickup Time</label>
@@ -206,13 +239,86 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        {/* 2. Order Items */}
+        {/* 2. Select Payment Method */}
         <div>
           <label className="block text-xs font-bold text-[#D2A072] uppercase tracking-wider mb-3">
-            2. Order Items ({cart.reduce((a, b) => a + b.quantity, 0)})
+            2. Payment Method
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { id: 'Cash', label: '💵 Cash on Pickup/Delivery' },
+              { id: 'Card', label: '💳 Card Payment (Demo)' },
+            ].map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setPaymentMethod(p.id as any)}
+                className={`py-3 px-2 rounded-xl text-xs font-bold transition border ${
+                  paymentMethod === p.id
+                    ? 'bg-[#D2A072] text-[#120B08] border-[#D2A072] font-extrabold'
+                    : 'bg-[#0F0A07] text-[#A39284] border-[#2E221B] hover:text-white'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Dummy Card Inputs */}
+          {paymentMethod === 'Card' && (
+            <div className="mt-3 bg-[#0F0A07] border border-[#2E221B] rounded-xl p-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] text-[#D2A072] font-bold uppercase tracking-wider">Demo Gateway</span>
+                <span className="text-[10px] text-[#A39284]">Enter test card details</span>
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-[#A39284] mb-1">Card Number</label>
+                <input
+                  type="text"
+                  maxLength={19}
+                  placeholder="4242 •••• •••• 4242"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  className="w-full bg-[#1C1410] border border-[#2E221B] rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-[#D2A072]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[11px] text-[#A39284] mb-1">Expiry Date</label>
+                  <input
+                    type="text"
+                    maxLength={5}
+                    placeholder="MM/YY"
+                    value={cardExpiry}
+                    onChange={(e) => setCardExpiry(e.target.value)}
+                    className="w-full bg-[#1C1410] border border-[#2E221B] rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-[#D2A072]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-[#A39284] mb-1">CVC / CVV</label>
+                  <input
+                    type="password"
+                    maxLength={3}
+                    placeholder="123"
+                    value={cardCvc}
+                    onChange={(e) => setCardCvc(e.target.value)}
+                    className="w-full bg-[#1C1410] border border-[#2E221B] rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-[#D2A072]"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 3. Order Items Summary */}
+        <div>
+          <label className="block text-xs font-bold text-[#D2A072] uppercase tracking-wider mb-3">
+            3. Order Summary ({cart.reduce((a, b) => a + b.quantity, 0)})
           </label>
           
-          <div className="bg-[#0F0A07] border border-[#2E221B] rounded-xl p-3 max-h-48 overflow-y-auto space-y-2">
+          <div className="bg-[#0F0A07] border border-[#2E221B] rounded-xl p-3 max-h-40 overflow-y-auto space-y-2">
             {cart.length === 0 ? (
               <p className="text-xs text-[#A39284] text-center py-4">Your cart is empty.</p>
             ) : (
@@ -244,7 +350,7 @@ export default function CheckoutPage() {
             disabled={loading || cart.length === 0}
             className="w-full py-3.5 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-black text-xs rounded-xl transition duration-300 shadow-lg disabled:opacity-50"
           >
-            {loading ? 'Submitting Order...' : 'Confirm & Place Order'}
+            {loading ? 'Processing Order...' : paymentMethod === 'Card' ? 'Pay & Confirm Order' : 'Confirm & Place Order'}
           </button>
         </div>
 
