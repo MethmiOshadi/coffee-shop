@@ -1,26 +1,26 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function CustomerLoginPage() {
-  const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccessMsg('');
 
-    // Frontend 10-digit validation check
-    const cleanedPhone = phone.replace(/[\s-]/g, '');
+    const cleanedPhone = phone.trim();
+
     if (!/^0\d{9}$/.test(cleanedPhone)) {
-      setError('Phone number must be exactly 10 digits starting with 0 (e.g. 0771234567)');
+      setError(`Phone number must be exactly 10 digits starting with '0' (Current length: ${cleanedPhone.length})`);
       return;
     }
 
@@ -41,9 +41,16 @@ export default function CustomerLoginPage() {
       const json = await res.json();
 
       if (json.success) {
-        localStorage.setItem('brew_customer', JSON.stringify(json.customer));
-        router.push('/checkout');
-        router.refresh();
+        if (isSignUp) {
+          // After Sign Up -> Show success message and automatically switch to Sign In mode
+          setSuccessMsg('Account created successfully! Please sign in with your credentials.');
+          setIsSignUp(false);
+          setPassword('');
+        } else {
+          // After Login -> Save customer to localStorage & force hard navigation to /checkout
+          localStorage.setItem('brew_customer', JSON.stringify(json.customer));
+          window.location.href = '/checkout';
+        }
       } else {
         setError(json.error || 'Authentication failed');
       }
@@ -69,8 +76,14 @@ export default function CustomerLoginPage() {
         </div>
 
         {error && (
-          <div className="bg-red-950/50 border border-red-800/50 text-red-400 text-xs p-3 rounded-xl mb-4 text-center">
+          <div className="bg-red-950/60 border border-red-800/60 text-red-400 text-xs p-3 rounded-xl mb-4 text-center">
             {error}
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="bg-emerald-950/60 border border-emerald-800/60 text-emerald-400 text-xs p-3 rounded-xl mb-4 text-center">
+            {successMsg}
           </div>
         )}
 
@@ -90,7 +103,9 @@ export default function CustomerLoginPage() {
           )}
 
           <div>
-            <label className="block text-xs text-[#A39284] mb-1">Phone Number (10 Digits)</label>
+            <label className="block text-xs text-[#A39284] mb-1">
+              Phone Number (10 Digits) {phone && <span className="text-[#D2A072]">({phone.length}/10)</span>}
+            </label>
             <input
               type="tel"
               required
@@ -98,7 +113,7 @@ export default function CustomerLoginPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
               className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-[#D2A072]"
-              placeholder="0771234567"
+              placeholder="0719575875"
             />
           </div>
 
@@ -129,6 +144,7 @@ export default function CustomerLoginPage() {
             onClick={() => {
               setIsSignUp(!isSignUp);
               setError('');
+              setSuccessMsg('');
             }}
             className="text-xs text-[#D2A072] hover:underline block w-full"
           >
