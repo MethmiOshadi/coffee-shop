@@ -31,6 +31,9 @@ export default function CheckoutPage() {
   const [orderSubmitted, setOrderSubmitted] = useState(false);
 
   useEffect(() => {
+    // ALWAYS reset confirmation screen when entering checkout
+    setOrderSubmitted(false);
+
     const savedCustomer = localStorage.getItem('brew_customer');
     if (!savedCustomer) {
       window.location.href = '/customer-login';
@@ -66,7 +69,6 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Basic Card Validation for Dummy Card Flow
     if (paymentMethod === 'Card') {
       if (!cardNumber || !cardExpiry || !cardCvc) {
         alert('Please fill out all dummy card details.');
@@ -76,7 +78,6 @@ export default function CheckoutPage() {
 
     setLoading(true);
 
-    // Simulate payment processing delay for Card
     if (paymentMethod === 'Card') {
       await new Promise((resolve) => setTimeout(resolve, 1200));
     }
@@ -123,6 +124,7 @@ export default function CheckoutPage() {
     );
   }
 
+  // Confirmation View
   if (orderSubmitted) {
     return (
       <div className="min-h-screen bg-[#0F0A07] text-[#EADCCF] flex items-center justify-center p-6">
@@ -162,6 +164,7 @@ export default function CheckoutPage() {
     );
   }
 
+  // Normal Checkout Form View
   return (
     <div className="min-h-screen bg-[#0F0A07] text-[#EADCCF] py-12 px-4 flex justify-center items-start">
       <div className="w-full max-w-xl bg-[#1C1410] border border-[#2E221B] rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
@@ -264,7 +267,6 @@ export default function CheckoutPage() {
             ))}
           </div>
 
-          {/* Dummy Card Inputs */}
           {paymentMethod === 'Card' && (
             <div className="mt-3 bg-[#0F0A07] border border-[#2E221B] rounded-xl p-4 space-y-3">
               <div className="flex justify-between items-center">

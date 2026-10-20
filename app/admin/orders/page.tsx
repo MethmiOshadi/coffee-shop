@@ -58,10 +58,11 @@ export default function AdminOrdersPage() {
       if (json.success) {
         fetchOrders();
       } else {
-        alert('Failed to update order status');
+        alert(`Failed to update order status: ${json.error || 'Server error'}`);
       }
     } catch (err) {
       console.error(err);
+      alert('Network error while updating status');
     }
   };
 
@@ -205,7 +206,7 @@ export default function AdminOrdersPage() {
                           onClick={() => updateOrderStatus(order._id, 'Completed', 'Paid')}
                           className="w-full py-2 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-black text-xs rounded-xl transition shadow-lg"
                         >
-                          ✅ Complete & Archive
+                          ✅ Complete & Move to History
                         </button>
                       )}
 

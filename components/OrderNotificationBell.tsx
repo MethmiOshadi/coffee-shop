@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function OrderNotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [lastStatuses, setLastStatuses] = useState<Record<string, string>>({});
+  
+  // useRef prevents duplicate triggers by storing notified states persistently across renders
+  const notifiedStatuses = useRef<Record<string, string>>({});
 
   useEffect(() => {
     const savedCustomer = localStorage.getItem('brew_customer');
@@ -20,14 +22,21 @@ export default function OrderNotificationBell() {
         const res = await fetch(`/api/customer/orders?phone=${phone}`);
         const json = await res.json();
         if (json.success && json.data) {
-          const currentStatuses: Record<string, string> = {};
           const newAlerts: string[] = [];
 
           json.data.forEach((order: any) => {
-            currentStatuses[order._id] = order.status;
+            const orderId = order._id;
+            const currentStatus = order.status;
+            const previousStatus = notifiedStatuses.current[orderId];
 
-            if (lastStatuses[order._id] && lastStatuses[order._id] !== order.status) {
-              newAlerts.push(`Order #${order._id.slice(-6)} is now ${order.status}!`);
+            if (!previousStatus) {
+              // Initialize current status on first load without firing notification
+              notifiedStatuses.current[orderId] = currentStatus;
+            } else if (previousStatus !== currentStatus) {
+              // Status has genuinely changed; update ref and queue single alert
+              notifiedStatuses.current[orderId] = currentStatus;
+              const alertMsg = `Order #${orderId.slice(-6)} is now ${currentStatus}!`;
+              newAlerts.push(alertMsg);
             }
           });
 
@@ -35,8 +44,6 @@ export default function OrderNotificationBell() {
             setNotifications((prev) => [...newAlerts, ...prev]);
             setUnreadCount((prev) => prev + newAlerts.length);
           }
-
-          setLastStatuses(currentStatuses);
         }
       } catch (err) {
         console.error(err);
@@ -46,7 +53,7 @@ export default function OrderNotificationBell() {
     checkStatusUpdates();
     const interval = setInterval(checkStatusUpdates, 6000);
     return () => clearInterval(interval);
-  }, [lastStatuses]);
+  }, []);
 
   return (
     <div className="relative">
@@ -88,7 +95,7 @@ export default function OrderNotificationBell() {
             href="/my-orders"
             className="block text-center text-[11px] text-[#D2A072] font-bold hover:underline pt-1"
           >
-            View All Active Orders ➔
+            View My Orders ➔
           </Link>
         </div>
       )}
