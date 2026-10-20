@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, ChangeEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface MenuItemType {
   _id: string;
@@ -20,6 +21,7 @@ const CATEGORIES = [
 ];
 
 export default function AdminPage() {
+  const router = useRouter();
   const [items, setItems] = useState<MenuItemType[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -33,8 +35,19 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // 1. Verify authentication status on load
+    fetch('/api/auth')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.authenticated) {
+          router.push('/login');
+        }
+      })
+      .catch(() => router.push('/login'));
+
+    // 2. Fetch existing menu items
     fetchItems();
-  }, []);
+  }, [router]);
 
   const fetchItems = async () => {
     try {
@@ -147,11 +160,28 @@ export default function AdminPage() {
     }
   };
 
+  const handleLogout = async () => {
+    await fetch('/api/auth?action=logout');
+    router.push('/login');
+    router.refresh();
+  };
+
   return (
     <div className="min-h-screen bg-[#0F0A07] text-[#EADCCF] p-6 md:p-12">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-extrabold text-white mb-2">Coffee Shop Admin Panel</h1>
-        <p className="text-[#A39284] mb-8">Add, edit, or delete your menu items seamlessly.</p>
+        {/* Header with Logout Button */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-extrabold text-white mb-2">Coffee Shop Admin Panel</h1>
+            <p className="text-[#A39284]">Add, edit, or delete your menu items seamlessly.</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 text-xs font-semibold rounded-xl transition"
+          >
+            Logout
+          </button>
+        </div>
 
         {/* Add / Edit Form */}
         <form onSubmit={handleSubmit} className="bg-[#1C1410] border border-[#2E221B] rounded-2xl p-6 mb-12 shadow-lg">
@@ -179,7 +209,7 @@ export default function AdminPage() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none"
-                placeholder="e.g. Americano"
+                placeholder="e.g. Caramel Macchiato"
               />
             </div>
 
