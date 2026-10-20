@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import OrderNotificationBell from '../components/OrderNotificationBell';
 
 interface MenuItemType {
   _id: string;
@@ -78,7 +79,6 @@ export default function HomePage() {
     ? items
     : items.filter((item) => item.category === activeCategory);
 
-  // Add Item without auto-navigating
   const addToCart = (item: MenuItemType) => {
     const existing = cart.find((c) => c._id === item._id);
     let updatedCart: CartItemType[];
@@ -89,7 +89,6 @@ export default function HomePage() {
     }
     saveCart(updatedCart);
 
-    // Show temporary toast notification
     setToastMessage(`Added ${item.name} to cart!`);
     setTimeout(() => setToastMessage(null), 2000);
   };
@@ -131,18 +130,22 @@ export default function HomePage() {
           </Link>
           
           <div className="flex items-center gap-3 md:gap-4">
-            {/* Customer Auth State & Quick Links */}
             {customer ? (
               <div className="flex items-center gap-2 md:gap-3">
+                {/* Real-time Order Notification Bell */}
+                <OrderNotificationBell />
+
                 <span className="text-xs text-[#A39284] hidden md:inline">
                   Welcome, <span className="text-[#D2A072] font-bold">{customer.name}</span>
                 </span>
+                
                 <Link
                   href="/my-orders"
                   className="bg-[#D2A072]/10 border border-[#D2A072]/40 text-[#D2A072] hover:bg-[#D2A072]/20 px-3 py-1.5 md:py-2 rounded-xl text-xs font-bold transition flex items-center gap-1"
                 >
                   📋 <span className="hidden sm:inline">My</span> Orders
                 </Link>
+
                 <button
                   onClick={handleLogout}
                   className="text-xs text-red-400 hover:text-red-300 border border-red-900/40 bg-red-950/20 px-2.5 py-1.5 md:py-2 rounded-xl transition"
@@ -171,14 +174,6 @@ export default function HomePage() {
                 </span>
               )}
             </button>
-
-            {/* Admin Portal Link */}
-            <Link
-              href="/admin"
-              className="text-xs text-[#A39284] hover:text-[#D2A072] border border-[#2E221B] hover:border-[#D2A072]/50 px-3 py-2 rounded-xl transition hidden sm:block"
-            >
-              Admin Portal
-            </Link>
           </div>
         </header>
 

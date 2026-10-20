@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface MenuItemType {
   _id: string;
@@ -35,7 +36,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // 1. Verify authentication status on load
     fetch('/api/auth')
       .then((res) => res.json())
       .then((data) => {
@@ -45,7 +45,6 @@ export default function AdminPage() {
       })
       .catch(() => router.push('/login'));
 
-    // 2. Fetch existing menu items
     fetchItems();
   }, [router]);
 
@@ -91,7 +90,6 @@ export default function AdminPage() {
 
     try {
       if (editingId) {
-        // UPDATE (PUT)
         const res = await fetch('/api/menu', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -105,7 +103,6 @@ export default function AdminPage() {
           alert('Failed to update item');
         }
       } else {
-        // CREATE (POST)
         const res = await fetch('/api/menu', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -169,18 +166,29 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-[#0F0A07] text-[#EADCCF] p-6 md:p-12">
       <div className="max-w-4xl mx-auto">
-        {/* Header with Logout Button */}
+        
+        {/* Header with Live Orders Link & Logout */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-extrabold text-white mb-2">Coffee Shop Admin Panel</h1>
             <p className="text-[#A39284]">Add, edit, or delete your menu items seamlessly.</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 text-xs font-semibold rounded-xl transition"
-          >
-            Logout
-          </button>
+          
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/orders"
+              className="px-4 py-2 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] text-xs font-bold rounded-xl transition shadow-md"
+            >
+              📋 Live Orders & History
+            </Link>
+
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 text-xs font-semibold rounded-xl transition"
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* Add / Edit Form */}
@@ -208,7 +216,7 @@ export default function AdminPage() {
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none"
+                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none text-xs"
                 placeholder="e.g. Caramel Macchiato"
               />
             </div>
@@ -218,7 +226,7 @@ export default function AdminPage() {
               <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none"
+                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none text-xs"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -233,7 +241,7 @@ export default function AdminPage() {
                 required
                 value={form.price}
                 onChange={(e) => setForm({ ...form, price: e.target.value })}
-                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none"
+                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none text-xs"
                 placeholder="e.g. 450.00 or LKR 450.00"
               />
             </div>
@@ -245,7 +253,7 @@ export default function AdminPage() {
                 accept="image/*"
                 required={!form.image}
                 onChange={handleImageChange}
-                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-3 py-2 text-white text-sm focus:border-[#D2A072] outline-none file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#D2A072] file:text-[#120B08]"
+                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-3 py-2 text-white text-xs focus:border-[#D2A072] outline-none file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#D2A072] file:text-[#120B08]"
               />
             </div>
           </div>
@@ -264,7 +272,7 @@ export default function AdminPage() {
               rows={3}
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none"
+              className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none text-xs"
               placeholder="Short description of the item..."
             />
           </div>
@@ -272,7 +280,7 @@ export default function AdminPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-bold rounded-xl transition duration-300"
+            className="w-full py-3 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-bold text-xs rounded-xl transition duration-300"
           >
             {loading ? 'Saving...' : editingId ? 'Update Menu Item' : 'Add Item to Menu'}
           </button>
@@ -287,7 +295,7 @@ export default function AdminPage() {
                 <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
                 <div className="overflow-hidden">
                   <h3 className="font-semibold text-white text-sm truncate">{item.name}</h3>
-                  <p className="text-[#D2A072] text-xs font-bold">{item.price} • {item.category}</p>
+                  <p className="text-[#D2A072] text-xs font-bold">{item.price}</p>
                   <p className="text-[#A39284] text-xs mt-1 line-clamp-1">{item.description}</p>
                 </div>
               </div>
@@ -310,6 +318,7 @@ export default function AdminPage() {
             </div>
           ))}
         </div>
+
       </div>
     </div>
   );
