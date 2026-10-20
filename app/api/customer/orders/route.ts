@@ -11,6 +11,7 @@ export async function GET(request: Request) {
     if (!phone) {
       return NextResponse.json({ success: false, error: 'Phone number required' }, { status: 400 });
     }
+
     const orders = await Order.find({ customerPhone: phone }).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: orders });
   } catch (error) {
