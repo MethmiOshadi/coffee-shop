@@ -21,6 +21,53 @@ const CATEGORIES = [
   "Special / Seasonal Items",
 ];
 
+function Icon({ name, size = 18 }: { name: string; size?: number }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.7,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true as const,
+  };
+  switch (name) {
+    case 'coffee':
+      return (
+        <svg {...common}>
+          <path d="M5 8h12v8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z" />
+          <path d="M17 10h2a2 2 0 1 1 0 4h-2M8 4c-2 2 2 2 0 4m5-4c-2 2 2 2 0 4" />
+        </svg>
+      );
+    case 'clipboard':
+      return (
+        <svg {...common}>
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+        </svg>
+      );
+    case 'logout':
+      return (
+        <svg {...common}>
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+      );
+    case 'plus':
+      return (
+        <svg {...common}>
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 export default function AdminPage() {
   const router = useRouter();
   const [items, setItems] = useState<MenuItemType[]>([]);
@@ -164,69 +211,79 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0A07] text-[#EADCCF] p-6 md:p-12">
+    <div className="min-h-screen bg-[#F8F5EF] text-[#30251E] p-6 md:p-12">
       <div className="max-w-4xl mx-auto">
         
         {/* Header with Live Orders Link & Logout */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-extrabold text-white mb-2">Coffee Shop Admin Panel</h1>
-            <p className="text-[#A39284]">Add, edit, or delete your menu items seamlessly.</p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b border-[#E9E0D5]">
+          <div className="flex items-center gap-3.5">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#30251E] text-[#D9BA91] shadow-md">
+              <Icon name="coffee" size={24} />
+            </span>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#30251E]">Admin Control Panel</h1>
+              <p className="text-xs text-[#77695C] mt-0.5">Manage your digital menu items and coffeehouse offerings.</p>
+            </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <Link
               href="/admin/orders"
-              className="px-4 py-2 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] text-xs font-bold rounded-xl transition shadow-md"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-[#30251E] hover:bg-[#49372B] text-white text-xs font-bold rounded-xl transition shadow-md"
             >
-              📋 Live Orders & History
+              <Icon name="clipboard" size={16} /> Live Orders & History
             </Link>
 
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 text-xs font-semibold rounded-xl transition"
+              className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold rounded-xl transition"
             >
-              Logout
+              <Icon name="logout" size={15} /> Logout
             </button>
           </div>
         </div>
 
         {/* Add / Edit Form */}
-        <form onSubmit={handleSubmit} className="bg-[#1C1410] border border-[#2E221B] rounded-2xl p-6 mb-12 shadow-lg">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-white">
-              {editingId ? 'Edit Menu Item' : 'Add New Menu Item'}
-            </h2>
+        <form onSubmit={handleSubmit} className="bg-white border border-[#E9E0D5] rounded-[28px] p-6 sm:p-8 mb-12 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#A17B50]">
+                {editingId ? 'Modification Mode' : 'Creation Mode'}
+              </span>
+              <h2 className="text-lg font-bold text-[#30251E]">
+                {editingId ? 'Edit Menu Item' : 'Add New Menu Item'}
+              </h2>
+            </div>
             {editingId && (
               <button
                 type="button"
                 onClick={resetForm}
-                className="text-xs text-[#A39284] hover:text-white underline"
+                className="text-xs font-semibold text-[#77695C] hover:text-[#30251E] underline underline-offset-4"
               >
                 Cancel Editing
               </button>
             )}
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
             <div>
-              <label className="block text-sm text-[#A39284] mb-1">Item Name</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#77695C] mb-2">Item Name</label>
               <input
                 type="text"
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none text-xs"
+                className="w-full bg-[#FAF7F2] border border-[#E4D9CB] rounded-2xl px-4.5 py-3 text-xs text-[#30251E] outline-none focus:bg-white focus:border-[#A17B50] focus:ring-4 focus:ring-[#A17B50]/10 transition"
                 placeholder="e.g. Caramel Macchiato"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-[#A39284] mb-1">Category</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#77695C] mb-2">Category</label>
               <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none text-xs"
+                className="w-full bg-[#FAF7F2] border border-[#E4D9CB] rounded-2xl px-4.5 py-3 text-xs text-[#30251E] outline-none focus:bg-white focus:border-[#A17B50] focus:ring-4 focus:ring-[#A17B50]/10 transition"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -235,82 +292,92 @@ export default function AdminPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-[#A39284] mb-1">Price (LKR)</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#77695C] mb-2">Price (LKR)</label>
               <input
                 type="text"
                 required
                 value={form.price}
                 onChange={(e) => setForm({ ...form, price: e.target.value })}
-                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none text-xs"
+                className="w-full bg-[#FAF7F2] border border-[#E4D9CB] rounded-2xl px-4.5 py-3 text-xs text-[#30251E] outline-none focus:bg-white focus:border-[#A17B50] focus:ring-4 focus:ring-[#A17B50]/10 transition"
                 placeholder="e.g. 450.00 or LKR 450.00"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-[#A39284] mb-1">Choose Image from Local Device</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#77695C] mb-2">Item Image File</label>
               <input
                 type="file"
                 accept="image/*"
                 required={!form.image}
                 onChange={handleImageChange}
-                className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-3 py-2 text-white text-xs focus:border-[#D2A072] outline-none file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#D2A072] file:text-[#120B08]"
+                className="w-full bg-[#FAF7F2] border border-[#E4D9CB] rounded-2xl px-3 py-2 text-xs text-[#77695C] outline-none file:mr-4 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#30251E] file:text-[#D9BA91] hover:file:bg-[#49372B] transition cursor-pointer"
               />
             </div>
           </div>
 
           {imagePreview && (
-            <div className="mb-4">
-              <p className="text-xs text-[#A39284] mb-1">Selected Image Preview:</p>
-              <img src={imagePreview} alt="Preview" className="w-20 h-20 object-cover rounded-xl border border-[#2E221B]" />
+            <div className="mb-5 flex items-center gap-4 bg-[#FAF7F2] p-3 rounded-2xl border border-[#E4D9CB]">
+              <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-xl border border-[#E9E0D5]" />
+              <div>
+                <p className="text-xs font-bold text-[#30251E]">Image Preview Loaded</p>
+                <p className="text-[11px] text-[#77695C]">Ready to upload with item details.</p>
+              </div>
             </div>
           )}
 
           <div className="mb-6">
-            <label className="block text-sm text-[#A39284] mb-1">Description</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#77695C] mb-2">Description</label>
             <textarea
               required
               rows={3}
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full bg-[#0F0A07] border border-[#2E221B] rounded-xl px-4 py-2.5 text-white focus:border-[#D2A072] outline-none text-xs"
-              placeholder="Short description of the item..."
+              className="w-full bg-[#FAF7F2] border border-[#E4D9CB] rounded-2xl px-4.5 py-3 text-xs text-[#30251E] outline-none focus:bg-white focus:border-[#A17B50] focus:ring-4 focus:ring-[#A17B50]/10 transition resize-none"
+              placeholder="Short description of ingredients or preparation..."
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-bold text-xs rounded-xl transition duration-300"
+            className="w-full py-4 bg-[#30251E] hover:bg-[#49372B] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition duration-300 shadow-lg disabled:opacity-50"
           >
-            {loading ? 'Saving...' : editingId ? 'Update Menu Item' : 'Add Item to Menu'}
+            {loading ? 'Saving Changes...' : editingId ? 'Update Menu Item' : 'Add Item to Menu'}
           </button>
         </form>
 
         {/* Existing Items List with Edit/Delete */}
-        <h2 className="text-xl font-semibold text-white mb-4">Existing Menu Items ({items.length})</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-[#30251E]">Existing Menu Items</h2>
+          <span className="text-xs font-bold px-3 py-1 rounded-full bg-white border border-[#E9E0D5] text-[#77695C]">
+            Total: {items.length}
+          </span>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {items.map((item) => (
-            <div key={item._id} className="bg-[#1C1410] border border-[#2E221B] rounded-xl p-4 flex gap-4 items-center justify-between">
-              <div className="flex gap-4 items-center overflow-hidden">
-                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
+            <div key={item._id} className="bg-white border border-[#E9E0D5] rounded-2xl p-4 flex gap-4 items-center justify-between shadow-sm">
+              <div className="flex gap-3.5 items-center overflow-hidden">
+                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-xl flex-shrink-0 bg-[#FAF7F2]" />
                 <div className="overflow-hidden">
-                  <h3 className="font-semibold text-white text-sm truncate">{item.name}</h3>
-                  <p className="text-[#D2A072] text-xs font-bold">{item.price}</p>
-                  <p className="text-[#A39284] text-xs mt-1 line-clamp-1">{item.description}</p>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#A17B50]">{item.category}</span>
+                  <h3 className="font-bold text-[#30251E] text-xs truncate">{item.name}</h3>
+                  <p className="text-[#A17B50] text-xs font-black mt-0.5">{item.price}</p>
+                  <p className="text-[#77695C] text-[11px] mt-0.5 line-clamp-1">{item.description}</p>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-2 flex-shrink-0">
+              <div className="flex flex-col gap-1.5 flex-shrink-0">
                 <button
                   onClick={() => handleEdit(item)}
-                  className="px-3 py-1 bg-[#2E221B] hover:bg-[#3D2D24] text-[#D2A072] text-xs font-semibold rounded-lg transition"
+                  className="px-3.5 py-1.5 bg-[#FAF7F2] hover:bg-[#EFE8DE] text-[#30251E] text-xs font-bold rounded-xl border border-[#E4D9CB] transition"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(item._id, item.name)}
-                  className="px-3 py-1 bg-red-950/40 hover:bg-red-900/60 text-red-400 text-xs font-semibold rounded-lg border border-red-800/40 transition"
+                  className="px-3.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl border border-red-200 transition"
                 >
                   Delete
                 </button>

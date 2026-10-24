@@ -265,7 +265,7 @@ export default function HomePage() {
       : items.filter((item) => item.category === activeCategory);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#FAF7F2] text-[#2C221E] selection:bg-[#D4A373] selection:text-[#2C221E] font-sans antialiased">
+    <div className="min-h-screen overflow-x-hidden bg-[#FAF7F2] text-[#2C221E] selection:bg-[#D4A373] selection:text-[#2C221E] font-sans antialiased scroll-smooth">
       {/* Toast Notification */}
       {toastMessage && (
         <div
@@ -454,7 +454,7 @@ export default function HomePage() {
       </section>
 
       {/* Main Menu Section */}
-      <main id="menu" className="mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24">
+      <main id="menu" className="mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24 scroll-mt-20">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-10">
           <div>
             <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#D4A373]">
@@ -578,9 +578,44 @@ export default function HomePage() {
         )}
       </main>
 
+      {/* Story & Art / Philosophy Section */}
+      <section id="story" className="scroll-mt-20 border-y border-[#EADFCF] bg-[#F2ECE1] py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#D4A373]">
+              Story & Art
+            </span>
+            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-[#2C221E]">
+              Crafted with passion, <br />
+              <span className="font-serif italic font-normal text-[#D4A373]">
+                inspired by tradition.
+              </span>
+            </h2>
+            <p className="text-sm leading-relaxed text-[#66564A]">
+              Elephantpath is more than just coffee. It is a daily ritual blending rich heritage with modern speed. Every blend tells a story of careful micro-roasting, sustainable sourcing, and genuine care for your everyday moments.
+            </p>
+            <div className="pt-2">
+              <a
+                href="#menu"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#2C221E] px-6 py-3.5 text-xs font-extrabold text-white transition hover:bg-[#3D302A]"
+              >
+                Experience Our Brews <Icon name="arrow" size={16} />
+              </a>
+            </div>
+          </div>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#EADFCF] shadow-lg">
+            <img
+              src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1000&q=80"
+              alt="Coffee Art and Philosophy"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-[#EADFCF] bg-[#2C221E] py-12 text-white">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 sm:flex-row lg:px-12">
+        <div className="mx-auto max-w-7xl flex flex-col items-center justify-between gap-6 px-6 sm:flex-row lg:px-12">
           <div className="flex items-center gap-3">
             <span className="text-xl">🐘</span>
             <span className="text-xs font-black tracking-widest uppercase">ELEPHANTPATH COFFEE</span>
