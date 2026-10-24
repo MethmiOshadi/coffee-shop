@@ -43,9 +43,20 @@ export default function HomePage() {
   useEffect(() => {
     fetchItems();
     
-    // Load Saved Cart
-    const savedCart = localStorage.getItem('brew_cart');
-    if (savedCart) setCart(JSON.parse(savedCart));
+    // Ensure cart drawer is closed on load
+    setIsCartOpen(false);
+    
+    // Check if an order was just placed (clean up cart if needed)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('clearCart') === 'true') {
+      localStorage.removeItem('brew_cart');
+      setCart([]);
+      window.history.replaceState({}, '', '/');
+    } else {
+      // Load Saved Cart normally
+      const savedCart = localStorage.getItem('brew_cart');
+      if (savedCart) setCart(JSON.parse(savedCart));
+    }
 
     // Load Logged-in Customer Session
     const savedCustomer = localStorage.getItem('brew_customer');
@@ -216,44 +227,87 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredItems.map((item) => (
-                <div
-                  key={item._id}
-                  className="bg-[#1C1410] border border-[#2E221B] rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between hover:border-[#D2A072]/40 transition duration-300"
-                >
-                  <div className="h-48 overflow-hidden relative">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover hover:scale-105 transition duration-500"
-                    />
-                    <span className="absolute top-3 right-3 bg-[#0F0A07]/80 backdrop-blur-md text-[#D2A072] text-[10px] font-bold px-3 py-1 rounded-full border border-[#2E221B]">
-                      {item.category}
-                    </span>
-                  </div>
+              {filteredItems.map((item) => {
+                const cartItem = cart.find((c) => c._id === item._id);
+                const quantity = cartItem ? cartItem.quantity : 0;
 
-                  <div className="p-5 flex flex-col flex-1 justify-between">
-                    <div>
-                      <div className="flex justify-between items-start gap-2 mb-2">
-                        <h3 className="font-bold text-white text-base">{item.name}</h3>
-                        <span className="text-[#D2A072] font-extrabold text-sm whitespace-nowrap">
-                          {item.price}
-                        </span>
-                      </div>
-                      <p className="text-[#A39284] text-xs leading-relaxed mb-4">
-                        {item.description}
-                      </p>
+                return (
+                  <div
+                    key={item._id}
+                    className="bg-[#1C1410] border border-[#2E221B] rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between hover:border-[#D2A072]/40 transition duration-300"
+                  >
+                    <div className="h-48 overflow-hidden relative">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                      />
+                      <span className="absolute top-3 right-3 bg-[#0F0A07]/80 backdrop-blur-md text-[#D2A072] text-[10px] font-bold px-3 py-1 rounded-full border border-[#2E221B]">
+                        {item.category}
+                      </span>
                     </div>
 
-                    <button
-                      onClick={() => addToCart(item)}
-                      className="w-full py-2.5 bg-[#2E221B] hover:bg-[#D2A072] text-[#D2A072] hover:text-[#120B08] font-bold text-xs rounded-xl transition duration-300"
-                    >
-                      Add to Cart
-                    </button>
+                    <div className="p-5 flex flex-col flex-1 justify-between">
+                      <div>
+                        <div className="flex justify-between items-start gap-2 mb-2">
+                          <h3 className="font-bold text-white text-base">{item.name}</h3>
+                          <span className="text-[#D2A072] font-extrabold text-sm whitespace-nowrap">
+                            {item.price}
+                          </span>
+                        </div>
+                        <p className="text-[#A39284] text-xs leading-relaxed mb-4 line-clamp-2">
+                          {item.description}
+                        </p>
+                      </div>
+
+                      {/* Clean, Segmented Cart Controller */}
+                      {quantity === 0 ? (
+                        <button
+                          onClick={() => addToCart(item)}
+                          className="w-full h-10 bg-[#2E221B] hover:bg-[#D2A072] text-[#D2A072] hover:text-[#120B08] font-bold text-xs rounded-xl transition duration-300 flex items-center justify-center"
+                        >
+                          Add to Cart
+                        </button>
+                      ) : (
+                        <div className="flex items-center justify-between gap-2 h-10">
+                          {/* Quantity Stepper */}
+                          <div className="flex-1 flex items-center justify-between bg-[#D2A072] text-[#120B08] h-full rounded-xl px-2 font-black text-xs shadow-md">
+                            <button
+                              onClick={() => updateQuantity(item._id, -1)}
+                              className="w-7 h-7 flex items-center justify-center hover:bg-[#120B08]/10 rounded-lg text-sm transition"
+                            >
+                              −
+                            </button>
+
+                            <span className="text-xs font-black tracking-wide">
+                              {quantity} in Cart
+                            </span>
+
+                            <button
+                              onClick={() => addToCart(item)}
+                              className="w-7 h-7 flex items-center justify-center hover:bg-[#120B08]/10 rounded-lg text-sm transition"
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          {/* Quick Clear Trash Button */}
+                          <button
+                            onClick={() => {
+                              const updated = cart.filter((c) => c._id !== item._id);
+                              saveCart(updated);
+                            }}
+                            title="Remove item"
+                            className="w-10 h-10 flex items-center justify-center bg-red-950/30 hover:bg-red-900/50 text-red-400 border border-red-800/40 rounded-xl transition"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </main>
