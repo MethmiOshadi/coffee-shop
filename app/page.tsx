@@ -125,41 +125,48 @@ export default function HomePage() {
   const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-[#0F0A07] text-[#EADCCF] flex flex-col justify-between relative">
+    <div className="min-h-screen bg-[#0F0A07] text-[#EADCCF] flex flex-col justify-between relative selection:bg-[#D2A072] selection:text-[#120B08]">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-[#D2A072] text-[#120B08] font-bold text-xs px-4 py-2.5 rounded-xl shadow-xl animate-bounce">
+        <div className="fixed top-20 right-4 sm:right-6 z-50 bg-[#D2A072] text-[#120B08] font-bold text-xs px-4 py-2.5 rounded-xl shadow-xl animate-bounce">
           {toastMessage}
         </div>
       )}
 
       {/* Header Bar */}
       <div>
-        <header className="border-b border-[#2E221B] px-6 py-4 md:px-12 flex justify-between items-center bg-[#120B08]/80 backdrop-blur-md sticky top-0 z-40">
-          <Link href="/" className="text-xl md:text-2xl font-black tracking-wider text-white flex items-center gap-2">
-            ☕ BREW & BEAN
+        <header className="border-b border-[#2E221B] px-3 sm:px-6 md:px-12 py-3.5 flex justify-between items-center bg-[#120B08]/90 backdrop-blur-md sticky top-0 z-40 gap-2">
+          <Link href="/" className="text-base sm:text-xl md:text-2xl font-black tracking-wider text-white flex items-center gap-2 shrink-0">
+            <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#2E221B] border border-[#3D2D24] flex items-center justify-center text-xs sm:text-sm shadow-inner">
+              ☕
+            </span>
+            <span className="bg-gradient-to-r from-white via-[#EADCCF] to-[#D2A072] bg-clip-text text-transparent">
+              BREW & BEAN
+            </span>
           </Link>
           
-          <div className="flex items-center gap-3 md:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
             {customer ? (
-              <div className="flex items-center gap-2 md:gap-3">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 bg-[#1C1410] border border-[#2E221B] px-2 sm:px-3 py-1 sm:py-1.5 rounded-2xl shadow-lg">
                 {/* Real-time Order Notification Bell */}
                 <OrderNotificationBell />
 
-                <span className="text-xs text-[#A39284] hidden md:inline">
+                <div className="h-3.5 w-[1px] bg-[#2E221B] hidden lg:block" />
+
+                <span className="text-xs text-[#A39284] hidden lg:inline">
                   Welcome, <span className="text-[#D2A072] font-bold">{customer.name}</span>
                 </span>
                 
                 <Link
                   href="/my-orders"
-                  className="bg-[#D2A072]/10 border border-[#D2A072]/40 text-[#D2A072] hover:bg-[#D2A072]/20 px-3 py-1.5 md:py-2 rounded-xl text-xs font-bold transition flex items-center gap-1"
+                  className="bg-[#D2A072]/10 border border-[#D2A072]/30 text-[#D2A072] hover:bg-[#D2A072] hover:text-[#120B08] px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1"
                 >
                   📋 <span className="hidden sm:inline">My</span> Orders
                 </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="text-xs text-red-400 hover:text-red-300 border border-red-900/40 bg-red-950/20 px-2.5 py-1.5 md:py-2 rounded-xl transition"
+                  className="text-[11px] sm:text-xs text-red-400 hover:text-red-300 border border-red-900/40 bg-red-950/20 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl transition"
                 >
                   Log Out
                 </button>
@@ -167,7 +174,7 @@ export default function HomePage() {
             ) : (
               <Link
                 href="/customer-login"
-                className="bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-lg"
+                className="bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-bold text-xs px-3 sm:px-4 py-2 rounded-xl transition shadow-lg whitespace-nowrap"
               >
                 Sign In
               </Link>
@@ -176,11 +183,11 @@ export default function HomePage() {
             {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative bg-[#1C1410] border border-[#2E221B] hover:border-[#D2A072]/50 px-3.5 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-2 transition"
+              className="relative bg-[#1C1410] border border-[#2E221B] hover:border-[#D2A072]/50 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5 transition shrink-0"
             >
               🛒 <span className="hidden sm:inline">Cart</span>
               {totalCartCount > 0 && (
-                <span className="bg-[#D2A072] text-[#120B08] px-2 py-0.5 rounded-full text-[10px] font-extrabold">
+                <span className="bg-[#D2A072] text-[#120B08] px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-black">
                   {totalCartCount}
                 </span>
               )}
@@ -189,23 +196,23 @@ export default function HomePage() {
         </header>
 
         {/* Hero Section */}
-        <section className="text-center py-12 md:py-16 px-6 max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
+        <section className="text-center py-10 sm:py-12 md:py-16 px-4 sm:px-6 max-w-3xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight">
             Crafted Coffee & Cozy Moments
           </h2>
-          <p className="text-[#A39284] text-xs md:text-base leading-relaxed">
+          <p className="text-[#A39284] text-xs sm:text-sm md:text-base leading-relaxed">
             Order online via Drive-Thru, In-Shop QR Scan, or Home Delivery!
           </p>
         </section>
 
         {/* Category Filter Pills */}
-        <div className="max-w-6xl mx-auto px-6 mb-10 overflow-x-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-8 sm:mb-10 overflow-x-auto scrollbar-none">
           <div className="flex gap-2 justify-start md:justify-center min-w-max pb-2">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2 rounded-xl text-xs font-bold transition duration-300 ${
+                className={`px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition duration-300 ${
                   activeCategory === cat
                     ? 'bg-[#D2A072] text-[#120B08] shadow-lg shadow-[#D2A072]/10'
                     : 'bg-[#1C1410] text-[#A39284] hover:text-white border border-[#2E221B]'
@@ -218,7 +225,7 @@ export default function HomePage() {
         </div>
 
         {/* Menu Grid Section */}
-        <main className="max-w-6xl mx-auto px-6 mb-20">
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
           {loading ? (
             <div className="text-center py-20 text-[#A39284] text-xs">Loading menu items...</div>
           ) : filteredItems.length === 0 ? (
@@ -226,7 +233,7 @@ export default function HomePage() {
               <p className="text-[#A39284] text-xs">No items found in this category.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {filteredItems.map((item) => {
                 const cartItem = cart.find((c) => c._id === item._id);
                 const quantity = cartItem ? cartItem.quantity : 0;
@@ -236,7 +243,7 @@ export default function HomePage() {
                     key={item._id}
                     className="bg-[#1C1410] border border-[#2E221B] rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between hover:border-[#D2A072]/40 transition duration-300"
                   >
-                    <div className="h-48 overflow-hidden relative">
+                    <div className="h-44 sm:h-48 overflow-hidden relative">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -247,7 +254,7 @@ export default function HomePage() {
                       </span>
                     </div>
 
-                    <div className="p-5 flex flex-col flex-1 justify-between">
+                    <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
                       <div>
                         <div className="flex justify-between items-start gap-2 mb-2">
                           <h3 className="font-bold text-white text-base">{item.name}</h3>
@@ -264,7 +271,7 @@ export default function HomePage() {
                       {quantity === 0 ? (
                         <button
                           onClick={() => addToCart(item)}
-                          className="w-full h-10 bg-[#2E221B] hover:bg-[#D2A072] text-[#D2A072] hover:text-[#120B08] font-bold text-xs rounded-xl transition duration-300 flex items-center justify-center"
+                          className="w-full h-10 bg-[#2E221B] hover:bg-[#D2A072] text-[#D2A072] hover:text-[#120B08] font-bold text-xs rounded-xl transition duration-300 flex items-center justify-center shadow-sm"
                         >
                           Add to Cart
                         </button>
@@ -298,7 +305,7 @@ export default function HomePage() {
                               saveCart(updated);
                             }}
                             title="Remove item"
-                            className="w-10 h-10 flex items-center justify-center bg-red-950/30 hover:bg-red-900/50 text-red-400 border border-red-800/40 rounded-xl transition"
+                            className="w-10 h-10 flex items-center justify-center bg-red-950/30 hover:bg-red-900/50 text-red-400 border border-red-800/40 rounded-xl transition shrink-0"
                           >
                             🗑️
                           </button>
@@ -313,27 +320,27 @@ export default function HomePage() {
         </main>
       </div>
 
-      {/* Cart Drawer */}
+      {/* Cart Drawer (Responsive Overlay) */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm transition">
-          <div className="w-full max-w-md bg-[#16100D] border-l border-[#2E221B] h-full flex flex-col p-6 shadow-2xl">
+          <div className="w-full sm:max-w-md bg-[#16100D] border-l border-[#2E221B] h-full flex flex-col p-4 sm:p-6 shadow-2xl">
             <div className="flex justify-between items-center pb-4 border-b border-[#2E221B]">
               <h2 className="text-lg font-bold text-white">Your Cart</h2>
-              <button onClick={() => setIsCartOpen(false)} className="text-[#A39284] hover:text-white text-sm font-bold">✕</button>
+              <button onClick={() => setIsCartOpen(false)} className="text-[#A39284] hover:text-white text-sm font-bold p-1">✕</button>
             </div>
 
-            <div className="flex-1 overflow-y-auto py-4 space-y-4">
+            <div className="flex-1 overflow-y-auto py-4 space-y-3">
               {cart.length === 0 ? (
                 <div className="text-center py-20 text-[#A39284] text-xs">Your cart is empty.</div>
               ) : (
                 cart.map((cartItem) => (
                   <div key={cartItem._id} className="bg-[#1C1410] border border-[#2E221B] rounded-xl p-3 flex items-center gap-3">
-                    <img src={cartItem.image} alt={cartItem.name} className="w-12 h-12 object-cover rounded-lg" />
-                    <div className="flex-1">
-                      <h4 className="text-white font-bold text-xs">{cartItem.name}</h4>
+                    <img src={cartItem.image} alt={cartItem.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-white font-bold text-xs truncate">{cartItem.name}</h4>
                       <p className="text-[#D2A072] text-xs font-semibold">{cartItem.price}</p>
                     </div>
-                    <div className="flex items-center gap-2 bg-[#0F0A07] border border-[#2E221B] rounded-lg px-2 py-1">
+                    <div className="flex items-center gap-1.5 sm:gap-2 bg-[#0F0A07] border border-[#2E221B] rounded-lg px-2 py-1 shrink-0">
                       <button onClick={() => updateQuantity(cartItem._id, -1)} className="text-xs text-[#A39284] hover:text-white px-1">-</button>
                       <span className="text-xs font-bold text-white">{cartItem.quantity}</span>
                       <button onClick={() => updateQuantity(cartItem._id, 1)} className="text-xs text-[#A39284] hover:text-white px-1">+</button>
@@ -351,7 +358,7 @@ export default function HomePage() {
                 </div>
                 <button
                   onClick={() => router.push('/checkout')}
-                  className="w-full py-3 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-bold rounded-xl text-xs transition duration-300"
+                  className="w-full py-3.5 bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-bold rounded-xl text-xs transition duration-300 shadow-lg"
                 >
                   Proceed to Checkout
                 </button>
@@ -362,7 +369,7 @@ export default function HomePage() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-[#2E221B] py-8 text-center text-xs text-[#A39284]">
+      <footer className="border-t border-[#2E221B] py-6 sm:py-8 text-center text-xs text-[#A39284] px-4">
         <p>© 2026 Brew & Bean Coffee Shop. All rights reserved.</p>
       </footer>
     </div>

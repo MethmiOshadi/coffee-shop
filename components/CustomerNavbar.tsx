@@ -26,70 +26,70 @@ export default function CustomerNavbar({ cartCount = 0, onOpenCart }: CustomerNa
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#120B08]/85 backdrop-blur-md border-b border-[#2E221B] px-4 md:px-10 py-3.5 transition-all">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <header className="sticky top-0 z-40 bg-[#120B08]/90 backdrop-blur-md border-b border-[#2E221B] px-3 sm:px-6 md:px-10 py-3 transition-all">
+      <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
         
         {/* Brand Logo */}
         <Link 
           href="/" 
-          className="group flex items-center gap-2.5 text-lg md:text-xl font-black tracking-wider text-white transition hover:opacity-90"
+          className="group flex items-center gap-2 text-base sm:text-lg md:text-xl font-black tracking-wider text-white shrink-0"
         >
-          <span className="w-8 h-8 rounded-xl bg-[#2E221B] border border-[#3D2D24] flex items-center justify-center text-sm shadow-inner group-hover:border-[#D2A072]/50 transition">
+          <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#2E221B] border border-[#3D2D24] flex items-center justify-center text-xs sm:text-sm shadow-inner group-hover:border-[#D2A072]/50 transition">
             ☕
           </span>
-          <span className="bg-gradient-to-r from-white via-[#EADCCF] to-[#D2A072] bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-white via-[#EADCCF] to-[#D2A072] bg-clip-text text-transparent text-sm sm:text-base md:text-lg">
             BREW & BEAN
           </span>
         </Link>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2.5 md:gap-3.5">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           {customer ? (
-            <div className="flex items-center gap-2 md:gap-3 bg-[#1C1410] border border-[#2E221B] px-3 py-1.5 rounded-2xl shadow-lg">
+            <div className="flex items-center gap-1.5 sm:gap-2.5 bg-[#1C1410] border border-[#2E221B] px-2 sm:px-3 py-1 sm:py-1.5 rounded-2xl shadow-lg">
               {/* Notification Bell */}
               <OrderNotificationBell />
 
-              <div className="h-4 w-[1px] bg-[#2E221B] hidden sm:block" />
+              <div className="h-3.5 w-[1px] bg-[#2E221B] hidden lg:block" />
 
-              {/* User Greeting */}
-              <span className="text-xs text-[#A39284] hidden md:inline">
+              {/* User Greeting - Hidden on small mobile */}
+              <span className="text-xs text-[#A39284] hidden lg:inline">
                 Hello, <span className="text-[#D2A072] font-bold">{customer.name}</span>
               </span>
 
               {/* My Orders Button */}
               <Link
                 href="/my-orders"
-                className="bg-[#D2A072]/10 border border-[#D2A072]/30 text-[#D2A072] hover:bg-[#D2A072] hover:text-[#120B08] px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-sm"
+                className="bg-[#D2A072]/10 border border-[#D2A072]/30 text-[#D2A072] hover:bg-[#D2A072] hover:text-[#120B08] px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1"
               >
-                📋 <span className="hidden sm:inline">My</span> Orders
+                📋 <span className="hidden sm:inline">Orders</span>
               </Link>
 
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="text-xs text-red-400 hover:text-red-300 bg-red-950/30 border border-red-900/40 hover:bg-red-900/50 px-2.5 py-1.5 rounded-xl transition duration-200"
+                className="text-[11px] sm:text-xs text-red-400 hover:text-red-300 bg-red-950/30 border border-red-900/40 hover:bg-red-900/50 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl transition"
               >
-                Log Out
+                Exit
               </button>
             </div>
           ) : (
             <Link
               href="/customer-login"
-              className="bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-black text-xs px-4 py-2 rounded-xl transition duration-300 shadow-md hover:shadow-[#D2A072]/10"
+              className="bg-[#D2A072] hover:bg-[#b8895e] text-[#120B08] font-black text-xs px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition shadow-md whitespace-nowrap"
             >
-              Sign In / Register
+              Sign In
             </Link>
           )}
 
-          {/* Cart Drawer Trigger Button (If handler provided) */}
+          {/* Cart Drawer Trigger Button */}
           {onOpenCart && (
             <button
               onClick={onOpenCart}
-              className="relative bg-[#1C1410] border border-[#2E221B] hover:border-[#D2A072]/50 px-3.5 py-2 rounded-2xl text-xs font-bold text-white flex items-center gap-2 transition shadow-md"
+              className="relative bg-[#1C1410] border border-[#2E221B] hover:border-[#D2A072]/50 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-2xl text-xs font-bold text-white flex items-center gap-1.5 transition shadow-md shrink-0"
             >
               🛒 <span className="hidden sm:inline">Cart</span>
               {cartCount > 0 && (
-                <span className="bg-[#D2A072] text-[#120B08] px-2 py-0.5 rounded-full text-[10px] font-black animate-pulse">
+                <span className="bg-[#D2A072] text-[#120B08] px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-black">
                   {cartCount}
                 </span>
               )}
